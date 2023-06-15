@@ -114,7 +114,7 @@ const check = async (api: ApiPromise, context: Context): Promise<void> => {
             } else {
                 context.curious++;
                 let result = await triggerAndWatch(api, context.keyPair, item.cid, item.hash);
-                console.log(`${context.keyPair.address} trigger dropped [${item.cid}, ${item.hash}], ${result}`);
+                console.log(`${context.keyPair.address} repair [${item.cid}, ${item.hash}], ${result}`);
             }
             drop.push(item.hash);
         }
