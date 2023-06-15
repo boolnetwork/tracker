@@ -1,6 +1,9 @@
 require("dotenv").config()
 
-export const CHAIN_WS_URL = process.env.CHAIN_WS_URL || "wss://test-rpc-node-ws.bool.network";
+export const CHAIN_WS_URL = process.env.CHAIN_WS_URL || 'wss://test-rpc-node-ws.bool.network';
+export const MONITOR_URL = process.env.MONITOR_URL || 'http://40.117.78.134:8740';
+export const SCANNER_KEY = process.env.SCANNER_KEY || '0xb7ad1bcb86dced081b9cca266d85fdcacd19da742be2f8537957e591e07eb5ea';
+export const SUBSCRIBE_KEY = process.env.SUBSCRIBE_KEY || '0xb7ad1bcb86dced081b9cca266d85fdcacd19da742be2f8537957e591e07eb5ea';
 
 export const CustomType = {
     "ValidatorId": "AccountId",

@@ -1,83 +1,48 @@
-import { getDefaultApi, isDroppedTransaction, toKeyPair, triggerAndWatch } from "./api"
-import { ApiPromise } from "@polkadot/api";
-import { KeyringPair } from "@polkadot/keyring/types";
+import { getDefaultApi, toKeyPair, postUncheckTransaction } from "./apis"
+import { hexToU8a } from "@polkadot/util";
+import { spawn, Thread, Worker } from "threads"
+import { ScanTask, toUncheckParam } from "./types";
+import { subscribe } from "diagnostics_channel";
+import { subscribeEvents } from "./workers/subscribe";
 
-interface NeedSignedTransaction {
-    cid: number,
-    epoch: number,
-    uid: String,
-    hash: String,
-}
+// TODO add express server
 
 let main = async () => {
-    let privateKey = "0xb7ad1bcb86dced081b9cca266d85fdcacd19da742be2f8537957e591e07eb5ea";
-    let keyPair = toKeyPair(privateKey);
-    let api = await getDefaultApi();
-
+    // let api = await getDefaultApi();
+    // let cid = 216;
+    // let hash = '0x8aaed765012c15109812d050890209c40107fa5761f38c9de3c448a97a5e155e';
+    // let hashU8 = hexToU8a(hash);
+    // let tx: any = await api.query.channel.txMessages(cid, hashU8);
+    // console.log(JSON.stringify(tx));
+    // let params = toUncheckParam(tx, hashU8);
+    // console.log(params.toString());
+    // console.log(JSON.stringify(params));
+    // let result = await postUncheckTransaction(params);
+    // console.log(result);
     // loop scan thread
-    let txs: NeedSignedTransaction[] = await scan(api, 5103098, 5103099);
-    await resend(api, keyPair, txs);
+    // let txs: NeedSignedTransaction[] = await scan(api, 5103098, 5103099);
+    // await resend(api, keyPair, txs);
+
+
+    // const scan = await spawn(new Worker("./workers/scanner"));
+    // const task: ScanTask = {
+    //     reason: 'local test',
+    //     from: 5103007,
+    //     to: 5103217,
+    //     step: 200,
+    // }
+    // await scan(task);
+    // await Thread.terminate(scan)
+
 
     // subscribe thread
-    await subscribe(api);
+    const subscribe = await spawn(new Worker("./workers/cache"));
+    await subscribe();
+    console.log('finished subscribe');
+    await Thread.terminate(subscribe)
+    console.log('terminate subscribe');
+
 }
 
-let scan = async (api: ApiPromise, from: number, to: number): Promise<NeedSignedTransaction[]> => {
-    console.log(`scan [${from},${to}) blocks`);
 
-    let nsts: NeedSignedTransaction[] = [];
-    let set: Set<String> = new Set<String>();
-    for (let i = from; i < to; i++) {
-        let hash = await api.rpc.chain.getBlockHash(i);
-        console.log(`hash: ${hash}`);
-        let events = await api.query.system.events.at(hash);
-        for (let record of events) {
-            const { event, phase } = record;
-            if (event.method === "NewTransaction") {
-                let nst: NeedSignedTransaction = {
-                    cid: parseInt(event.data[0].toString()),
-                    epoch: parseInt(event.data[1].toString()),
-                    uid: event.data[2].toString(),
-                    hash: event.data[3].toString(),
-                }
-                // filter duplicates
-                if (set.has(nst.hash) == true) {
-                    continue;
-                }
-                set.add(nst.hash);
-                
-                let result = await isDroppedTransaction(api, nst.cid, nst.hash);
-                if (result == true) {
-                    nsts.push(nst);
-                }
-            }
-        }
-    }
-    console.log(`scan [${from},${to}) has ${nsts.length} dropped`);
-    return nsts;
-}
-
-let resend = async (api: ApiPromise, keyPair: KeyringPair, nsts: NeedSignedTransaction[]) => {
-    for (const nst of nsts) {
-        let result = await triggerAndWatch(api, keyPair, nst.cid, nst.hash);
-        console.log(result);
-    }
-}
-
-let subscribe = async (api: ApiPromise) => {
-    // subscribe to finalized blocks:
-	await api.rpc.chain.subscribeFinalizedHeads(async (header) => {
-        let events = await api.query.system.events.at(header.hash);
-        for (let record of events) {
-            const { event, phase } = record;
-            if (event.method === "NewTransaction") {
-                let cid = event.data[0];
-                let hash = event.data[3];
-                let tx: any = await api.query.channel.txMessages(cid, hash);
-                // TODO send to monitor
-            }
-        }
-	});
-}
-
-main().catch(console.error).finally(() => process.exit());
+main().catch(console.error)

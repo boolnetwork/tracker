@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { CustomType, CHAIN_WS_URL } from "./constant";
+import { CustomType, CHAIN_WS_URL } from "../constant";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { createTestKeyring } from '@polkadot/keyring';
 import { hexToU8a } from "@polkadot/util";
@@ -9,7 +9,6 @@ import { hexToU8a } from "@polkadot/util";
 let api: any = undefined;
 export const getDefaultApi = async (): Promise<ApiPromise> => {
   if (api == undefined) {
-
     const wsProvider = new WsProvider(CHAIN_WS_URL);
     const options = {
       types: CustomType,
@@ -33,7 +32,7 @@ export const isDroppedTransaction = async (api: ApiPromise, cid: number, hash: S
 }
 
 export const triggerAndWatch = async (api: ApiPromise, keyPair: KeyringPair, cid: number, hash: String): Promise<String> => {
-  let doWithListener = (seed:any , call:any) => {
+  let doWithListener = (seed: any, call: any) => {
     return new Promise(function (resolve, reject) {
       call.signAndSend(seed, ((cb: any) => {
         if (cb.status.isInBlock) {
@@ -43,8 +42,8 @@ export const triggerAndWatch = async (api: ApiPromise, keyPair: KeyringPair, cid
           });
           resolve(result);
         }
-      })).catch(_err => {
-        reject("error");
+      })).catch(err => {
+        reject(err);
       });
     });
   }
