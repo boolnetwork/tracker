@@ -12,7 +12,7 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { SUBSCRIBE_KEY } from '../constant';
 
 // 6 minute
-const EXPIRED_TIME = 6 * 60 * 1000;
+const EXPIRED_TIME = 11 * 60 * 1000;
 
 interface Context {
 	latestHeight: number;
@@ -73,11 +73,11 @@ async function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// (latest, current])
+// [latest, current)
 const lookup = async (api: ApiPromise, current: number, context: Context): Promise<void> => {
 	for (let i = context.latestHeight; i < current; i++) {
-		let hash = await api.rpc.chain.getBlockHash(i);
-		let events = await api.query.system.events.at(hash);
+		let blockHash = await api.rpc.chain.getBlockHash(i);
+		let events = await api.query.system.events.at(blockHash);
 		for (let record of events) {
 			const { event } = record;
 			if (event.method === 'SubmitTransaction') {
@@ -87,8 +87,9 @@ const lookup = async (api: ApiPromise, current: number, context: Context): Promi
 				let params = toUncheckParam(tx, hash.toU8a());
 				let result = await postUncheckTransaction(params);
 				console.log('monitor :', result);
-				context.state.delete(hash.toString());
-				context.release++;
+				if (context.state.delete(hash.toString())) {
+					context.release++;
+				}
 			} else if (event.method === 'NewTransaction') {
 				let key = event.data[3].toString();
 				if (context.state.has(key)) {
@@ -117,10 +118,9 @@ const check = async (api: ApiPromise, context: Context): Promise<void> => {
 	let drop: string[] = [];
 	context.state.forEach(async (item) => {
 		if (isOutdate(now, item.timestamp)) {
-			if (!(await isDroppedTransaction(api, item.cid, item.hash))) {
-				console.log(`unexpected item: ${item}`);
-			} else {
+			if (await isDroppedTransaction(api, item.cid, item.hash)) {
 				context.curious++;
+				console.log(`${context.keyPair.address} try repair [${item.cid}, ${item.hash}]`);
 				let result = await triggerAndWatch(api, context.keyPair, item.cid, item.hash);
 				console.log(`${context.keyPair.address} repair [${item.cid}, ${item.hash}], ${result}`);
 			}
