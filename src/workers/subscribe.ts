@@ -32,7 +32,7 @@ export const subscribeEvents = async () => {
 		let latestHeader = await api.rpc.chain.getHeader(latestHash);
 		latestHeight = latestHeader.number.toNumber();
 	}
-	console.log(`latestHeight : ${latestHeight}`);
+
 	let context: Context = {
 		latestHeight: latestHeight,
 		state: state,
@@ -42,8 +42,9 @@ export const subscribeEvents = async () => {
 		keyPair: toKeyPair(SUBSCRIBE_KEY)
 	};
 
+	console.log(`latestHeight : ${latestHeight}, operator: ${context.keyPair.address}`);
 	// subscribe to finalized blocks:
-	const ob = await api.rpc.chain.subscribeNewHeads(async (header) => {
+	const ob = await api.rpc.chain.subscribeNewHeads(async (header: any) => {
 		// console.log(header);
 		let current = (await api.rpc.chain.getHeader(header.hash)).number.toNumber();
 		try {

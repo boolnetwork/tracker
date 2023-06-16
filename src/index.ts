@@ -3,6 +3,7 @@ import { hexToU8a } from '@polkadot/util';
 import { spawn, Thread, Worker } from 'threads';
 import { ScanTask, toUncheckParam } from './types';
 import { server } from './server';
+import { MONITOR_URL, SCANNER_KEY, SUBSCRIBE_KEY, CHAIN_WS_URL } from './constant';
 
 const test = async () => {
 	let api = await getDefaultApi();
@@ -18,9 +19,18 @@ const test = async () => {
 	console.log(result);
 };
 
+const showConfig = () => {
+	let subscribeAccount = toKeyPair(SUBSCRIBE_KEY);
+	let scannerAccount = toKeyPair(SCANNER_KEY);
+	console.log(
+		`CHAIN_WS_URL: ${CHAIN_WS_URL} \n MONITOR_URL: ${MONITOR_URL} \n SCANNER: ${scannerAccount.address} \n SUBSCRIBER: ${subscribeAccount.address}`
+	);
+};
+
 let main = async () => {
 	server();
-
+	showConfig();
+	// test();
 	// subscribe thread
 	const subscribe = await spawn(new Worker('./workers/subscribe'));
 	await subscribe();

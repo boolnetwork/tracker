@@ -15,8 +15,9 @@ function getHash(data: object): string {
 const scan = async (task: ScanTask) => {
 	const tag = getHash(task);
 	try {
-		console.log(`task >>> ${tag} begin`);
 		let keyPair = toKeyPair(SCANNER_KEY);
+		console.log(`task >>> ${tag} begin with operator: ${keyPair.address}`);
+
 		let api = await getDefaultApi();
 		for (let i = task.from; i < task.to; i += task.step) {
 			let iTo = Math.min(i + task.step, task.to);
