@@ -44,7 +44,7 @@ export const subscribeEvents = async () => {
 
 	console.log(`latestHeight : ${latestHeight}, operator: ${context.keyPair.address}`);
 	// subscribe to finalized blocks:
-	const ob = await api.rpc.chain.subscribeNewHeads(async (header: any) => {
+	const ob = await api.rpc.chain.subscribeFinalizedHeads(async (header: any) => {
 		// console.log(header);
 		let current = (await api.rpc.chain.getHeader(header.hash)).number.toNumber();
 		try {
