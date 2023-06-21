@@ -39,6 +39,25 @@ export interface RecordItem {
 	blockNumber: number;
 }
 
+
+const toChainType = (type: string): ChainType => {
+	if (type == "Eth") {
+		return ChainType.ETH;
+	} else if (type == "Fil") {
+		return ChainType.FIL;
+	} else if (type == "Bsc") {
+		return ChainType.BSC;
+	} else if (type == "Btc") {
+		return ChainType.BTC;
+	} else if (type == "Solana") {
+		return ChainType.SOLANA;
+	} else if (type == "Aptos") {
+		return ChainType.APTOS;
+	} else {
+		return ChainType.RAW;
+	}
+}
+
 export const toUncheckParam = (tx: any, hash: Uint8Array): UncheckParams => {
 	const uk: UncheckParams = {
 		cid: parseInt(tx.cid.toString()),
@@ -46,7 +65,7 @@ export const toUncheckParam = (tx: any, hash: Uint8Array): UncheckParams => {
 		msg: Array.from(tx.msg),
 		sig: Array.from(tx.signature),
 		hash: Array.from(hash),
-		chain_type: ChainType.ETH //ChainType[tx.txsource.chain_type.toNumber()]
+		chain_type: toChainType(tx.txsource.chain_type.toString())
 	};
 	return uk;
 };
