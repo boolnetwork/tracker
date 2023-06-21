@@ -40,18 +40,18 @@ export interface RecordItem {
 }
 
 
-const toChainType = (type: string): ChainType => {
-	if (type == "Eth") {
+const toChainType = (type: number): ChainType => {
+	if (type == 4) {
 		return ChainType.ETH;
-	} else if (type == "Fil") {
+	} else if (type == 1) {
 		return ChainType.FIL;
-	} else if (type == "Bsc") {
+	} else if (type == 2) {
 		return ChainType.BSC;
-	} else if (type == "Btc") {
+	} else if (type == 3) {
 		return ChainType.BTC;
-	} else if (type == "Solana") {
+	} else if (type == 5) {
 		return ChainType.SOLANA;
-	} else if (type == "Aptos") {
+	} else if (type == 6) {
 		return ChainType.APTOS;
 	} else {
 		return ChainType.RAW;
@@ -65,7 +65,7 @@ export const toUncheckParam = (tx: any, hash: Uint8Array): UncheckParams => {
 		msg: Array.from(tx.msg),
 		sig: Array.from(tx.signature),
 		hash: Array.from(hash),
-		chain_type: toChainType(tx.txsource.chain_type.toString())
+		chain_type: toChainType(tx.txsource.chain_type.toNumber())
 	};
 	return uk;
 };
