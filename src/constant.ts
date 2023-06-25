@@ -7,6 +7,8 @@ export const SCANNER_KEY =
 export const SUBSCRIBE_KEY =
 	process.env.SUBSCRIBE_KEY || '0xb7ad1bcb86dced081b9cca266d85fdcacd19da742be2f8537957e591e07eb5ea';
 
+export const DELAY_BLOCKS = process.env.DELAY_BLOCKS || 20;
+
 export const CustomType = {
 	ValidatorId: 'AccountId',
 	Keys: {

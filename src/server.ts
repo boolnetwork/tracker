@@ -1,41 +1,39 @@
 import express from 'express';
 import { spawn, Thread, Worker } from 'threads';
-import { ScanTask, toUncheckParam } from './types';
+import { ScanTask, TaskType, toUncheckParam } from './types';
 import { SCANNER_KEY } from './constant';
 import { getDefaultApi, postUncheckTransaction, toKeyPair, triggerAndWatch } from './apis';
 import { hexToU8a } from '@polkadot/util';
-
-enum TaskType {
-	New = 'New',
-	Submit = 'Submit',
-	All = 'All'
-}
-
-interface RequestScanTask {
-	from: number;
-	to: number;
-	type: TaskType;
-}
-
-interface RequestRepair {
-	cid: number;
-	hash: string;
-	type: TaskType;
-}
 
 const app = express();
 app.use(express.json());
 
 app.post('/scan', async (req, res) => {
 	const scan = await spawn(new Worker('./workers/scanner'));
-	const task: ScanTask = {
-		reason: 'client request',
-		from: req.body.from,
-		to: req.body.to,
-		step: 200
-	};
-	scan(task).then(async () => await Thread.terminate(scan));
+	let taskType = TaskType.New;
+	if (req.body.type == 'New') {
+		taskType = TaskType.New;
+	} else if (req.body.type == 'Submit') {
+		taskType = TaskType.Submit;
+	} else if (req.body.type == 'All') {
+		taskType = TaskType.All;
+	} else {
+		taskType = TaskType.New;
+	}
 
+	try {
+		const task: ScanTask = {
+			reason: 'client request',
+			from: req.body.from,
+			to: req.body.to,
+			step: 200,
+			type: taskType,
+		};
+		scan(task).then(async () => await Thread.terminate(scan));
+	} catch (e) {
+		res.status(403).send(e);
+	}
+	
 	res.status(200).send('Ok');
 });
 

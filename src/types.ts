@@ -29,6 +29,7 @@ export interface ScanTask {
 	from: number;
 	to: number;
 	step: number;
+	type?: TaskType;
 }
 
 export interface RecordItem {
@@ -39,6 +40,23 @@ export interface RecordItem {
 	blockNumber: number;
 }
 
+export enum TaskType {
+	New = 'New',
+	Submit = 'Submit',
+	All = 'All'
+}
+
+export interface RequestScanTask {
+	from: number;
+	to: number;
+	type: TaskType;
+}
+
+export interface RequestRepair {
+	cid: number;
+	hash: string;
+	type: TaskType;
+}
 
 const toChainType = (type: number): ChainType => {
 	if (type == 4) {
