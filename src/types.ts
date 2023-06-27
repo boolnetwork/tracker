@@ -15,6 +15,7 @@ export interface UncheckParams {
 	sig: Array<number>;
 	hash: Array<number>;
 	chain_type: string;
+	source_hash: Array<number>;
 }
 
 export interface NeedSignedTransaction {
@@ -83,7 +84,8 @@ export const toUncheckParam = (tx: any, hash: Uint8Array): UncheckParams => {
 		msg: Array.from(tx.msg),
 		sig: Array.from(tx.signature),
 		hash: Array.from(hash),
-		chain_type: toChainType(tx.txsource.chain_type.toNumber())
+		chain_type: toChainType(tx.txsource.chain_type.toNumber()),
+		source_hash: Array.from([0])
 	};
 	return uk;
 };
