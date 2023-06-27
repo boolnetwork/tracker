@@ -9,7 +9,7 @@ import {
 } from '../apis';
 import { expose } from 'threads/worker';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { SUBSCRIBE_KEY } from '../constant';
+import { LATEST_BLOCK, SUBSCRIBE_KEY } from '../constant';
 
 // 6 minute
 const EXPIRED_TIME = 11 * 60 * 1000;
@@ -26,7 +26,7 @@ interface Context {
 export const subscribeEvents = async () => {
 	let api = await getDefaultApi();
 	let state: Map<string, RecordItem> = new Map();
-	let latestHeight: number = 0;
+	let latestHeight: number = parseInt(LATEST_BLOCK);
 	if (latestHeight <= 10) {
 		let latestHash = await api.rpc.chain.getFinalizedHead();
 		let latestHeader = await api.rpc.chain.getHeader(latestHash);
