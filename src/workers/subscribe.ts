@@ -21,6 +21,7 @@ interface Context {
 	release: number;
 	curious: number;
 	keyPair: KeyringPair;
+	isPendingLock: boolean;
 }
 
 export const subscribeEvents = async () => {
@@ -39,31 +40,39 @@ export const subscribeEvents = async () => {
 		capture: 0,
 		release: 0,
 		curious: 0,
-		keyPair: toKeyPair(SUBSCRIBE_KEY)
+		keyPair: toKeyPair(SUBSCRIBE_KEY),
+		isPendingLock: false,
 	};
 
 	console.log(`latestHeight : ${latestHeight}, operator: ${context.keyPair.address}`);
+
 	// subscribe to finalized blocks:
 	const ob = await api.rpc.chain.subscribeFinalizedHeads(async (header: any) => {
 		// console.log(header);
 		let current = (await api.rpc.chain.getHeader(header.hash)).number.toNumber();
-		try {
-			await lookup(api, current, context);
-			context.latestHeight = current;
-		} catch (err) {
-			console.log(err);
-		}
 
-		try {
-			await check(api, context);
-		} catch (err) {
-			console.log(err);
+		if (!context.isPendingLock) {
+			context.isPendingLock = true;
+			try {
+				await lookup(api, current, context);
+				context.latestHeight = current;
+			} catch (err) {
+				console.log(err);
+			}
+	
+			try {
+				await check(api, context);
+			} catch (err) {
+				console.log(err);
+			}
+
+			context.isPendingLock = false;
 		}
 	});
 
 	while (1) {
 		console.log(
-			`==height: ${context.latestHeight}, utx: ${context.state.size}, cp: ${context.capture}, re: ${context.release}, cu: ${context.curious}==`
+			`==height: ${context.latestHeight}, utx: ${context.state.size}, cp: ${context.capture}, re: ${context.release}, cu: ${context.curious}, lock: ${context.isPendingLock}==`
 		);
 		await sleep(10000);
 	}
