@@ -15,7 +15,8 @@ import { LATEST_BLOCK, SUBSCRIBE_KEY } from '../constant';
 const EXPIRED_TIME = 11 * 60 * 1000;
 
 interface Context {
-	latestHeight: number;
+	beginHeight: number;
+	currentHeight: number;
 	state: Map<string, RecordItem>;
 	capture: number;
 	release: number;
@@ -35,7 +36,8 @@ export const subscribeEvents = async () => {
 	}
 
 	let context: Context = {
-		latestHeight: latestHeight,
+		beginHeight: latestHeight,
+		currentHeight: latestHeight,
 		state: state,
 		capture: 0,
 		release: 0,
@@ -49,13 +51,13 @@ export const subscribeEvents = async () => {
 	// subscribe to finalized blocks:
 	const ob = await api.rpc.chain.subscribeFinalizedHeads(async (header: any) => {
 		// console.log(header);
-		let current = (await api.rpc.chain.getHeader(header.hash)).number.toNumber();
+		let latest = (await api.rpc.chain.getHeader(header.hash)).number.toNumber();
 
 		if (!context.isPendingLock) {
 			context.isPendingLock = true;
 			try {
-				await lookup(api, current, context);
-				context.latestHeight = current;
+				await lookup(api, latest, context);
+				context.beginHeight = latest;
 			} catch (err) {
 				console.log(err);
 			}
@@ -72,7 +74,7 @@ export const subscribeEvents = async () => {
 
 	while (1) {
 		console.log(
-			`==height: ${context.latestHeight}, utx: ${context.state.size}, cp: ${context.capture}, re: ${context.release}, cu: ${context.curious}, lock: ${context.isPendingLock}==`
+			`==bh: ${context.beginHeight}, ch: ${context.currentHeight}, utx: ${context.state.size}, cp: ${context.capture}, re: ${context.release}, cu: ${context.curious}, lock: ${context.isPendingLock}==`
 		);
 		await sleep(10000);
 	}
@@ -82,9 +84,9 @@ async function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// [latest, current)
-const lookup = async (api: ApiPromise, current: number, context: Context): Promise<void> => {
-	for (let i = context.latestHeight; i < current; i++) {
+// [begin, latest)
+const lookup = async (api: ApiPromise, latest: number, context: Context): Promise<void> => {
+	for (let i = context.beginHeight; i < latest; i++) {
 		let blockHash = await api.rpc.chain.getBlockHash(i);
 		let events = await api.query.system.events.at(blockHash);
 		for (let record of events) {
@@ -115,6 +117,7 @@ const lookup = async (api: ApiPromise, current: number, context: Context): Promi
 				context.capture++;
 			}
 		}
+		context.currentHeight = i;
 	}
 };
 
