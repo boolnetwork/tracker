@@ -29,6 +29,7 @@ docker login -u $REPO -p $DOCKER_PASS
 echo "*** Tagging $REPO/$NAME"
 if [[ $VERSION != *"beta"* ]]; then
   docker tag $NAME $REPO/$NAME:$VERSION
+  docker push $REPO/$NAME:$VERSION
 fi
 docker tag $NAME $REPO/$NAME
 
