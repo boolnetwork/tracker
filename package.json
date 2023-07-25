@@ -11,7 +11,10 @@
 		"clean": "./node_modules/.bin/rimraf build",
 		"update": "./node_modules/.bin/ncu -u && yarn",
 		"lint": "eslint . --ext .ts --fix",
-		"format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+		"format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+		"ver-minor": "npm version $(semver $npm_package_version -i minor)",
+		"ver-patch": "npm version $(semver $npm_package_version -i patch)",
+		"ver-major": "npm version $(semver $npm_package_version -i major)"
 	},
 	"dependencies": {
 		"@polkadot/api": "v6.9.2",
@@ -38,6 +41,7 @@
 		"prettier": "^2.8.3",
 		"ts-loader": "^9.4.2",
 		"ts-node": "^10.9.1",
-		"typescript": "^5.1.2"
+		"typescript": "^5.1.2",
+		"semver": "^7.3.7"
 	}
 }
