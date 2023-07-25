@@ -17,8 +17,8 @@
 		"ver-major": "npm version $(semver $npm_package_version -i major)"
 	},
 	"dependencies": {
-		"@polkadot/api": "v6.9.2",
-		"@polkadot/keyring": "^7.8.2",
+		"@polkadot/api": "^v10.9.1",
+		"@polkadot/keyring": "^12.3.2",
 		"axios": "^1.4.0",
 		"dotenv": "^16.1.4",
 		"express": "^4.18.2",
