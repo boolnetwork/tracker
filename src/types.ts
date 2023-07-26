@@ -84,7 +84,7 @@ export const toUncheckParam = (tx: any, hash: Uint8Array): UncheckParams => {
     msg: Array.from(tx.msg),
     sig: Array.from(tx.signature),
     hash: Array.from(hash),
-    chain_type: toChainType(tx.txsource.chain_type.toNumber()),
+    chain_type: toChainType(tx.txsource.chainType.toNumber()),
     source_hash: Array.from([0])
   };
   return uk;
