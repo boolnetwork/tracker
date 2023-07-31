@@ -2,6 +2,23 @@
 
 bool system cross-chain transaction auxiliary tool, used to monitor outstanding transactions and trigger them.
 
+## Env
+
+```
+# The URL of the listening chain
+CHAIN_WS_URL=
+# The URL of the notify
+MONITOR_URL=
+# The private key of the account used to submit the transaction for scaner task
+SCANNER_KEY=
+# The private key of the account used to submit the transaction for subscribe task
+SUBSCRIBE_KEY=
+# Specify from which block to start synchronizing data
+LATEST_BLOCK=
+# The number of delayed processing blocks can be regarded as the number of confirmed blocks
+DELAY_BLOCKS=
+```
+
 ## Example
 
 - call scan
