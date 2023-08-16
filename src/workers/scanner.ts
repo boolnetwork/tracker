@@ -27,7 +27,7 @@ const scan = async (task: ScanTask) => {
     let api = await getDefaultApi();
     for (let i = task.from; i < task.to; i += task.step) {
       let iTo = Math.min(i + task.step, task.to);
-      let result = await subScan(api, tag, i, iTo);
+      let result = await subScan(api, tag, i, iTo, task.cids);
       await resend(api, tag, keyPair, task.type ? task.type : TaskType.New, result);
     }
   } catch (err) {
@@ -46,7 +46,8 @@ let subScan = async (
   api: ApiPromise,
   tag: string,
   from: number,
-  to: number
+  to: number,
+  cids?: Array<number>,
 ): Promise<ScanResult> => {
   console.log(`${tag} scan [${from},${to}) blocks`);
 
@@ -80,10 +81,12 @@ let subScan = async (
 
       if (event.method === 'SubmitTransaction') {
         let cid = event.data[0];
-        let hash = event.data[3];
-        let tx: any = await api.query.channel.txMessages(cid, hash);
-        let params = toUncheckParam(tx, hash.toU8a());
-        sbts.push(params);
+        if (cids == undefined || (cids != undefined && cids.includes(cid.toNumber()))) {
+          let hash = event.data[3];
+          let tx: any = await api.query.channel.txMessages(cid, hash);
+          let params = toUncheckParam(tx, hash.toU8a());
+          sbts.push(params);
+        }
       }
     }
   }

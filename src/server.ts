@@ -27,7 +27,8 @@ app.post('/scan', async (req, res) => {
       from: req.body.from,
       to: req.body.to,
       step: 200,
-      type: taskType
+      type: taskType,
+      cids: req.body.cids,
     };
     scan(task).then(async () => await Thread.terminate(scan));
   } catch (e) {

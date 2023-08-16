@@ -34,6 +34,7 @@ export interface ScanTask {
   to: number;
   step: number;
   type?: TaskType;
+  cids?: Array<number>;
 }
 
 export interface RecordItem {

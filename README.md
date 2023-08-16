@@ -23,12 +23,18 @@ DELAY_BLOCKS=
 
 - call scan
 
-```
+```shell
 curl -H "Content-Type: application/json" -X POST -d '{"from": 4, "to": 5, "type": "Submit"}' http://localhost:3000/scan
+```
+
+- call scan and filter with cids
+
+```shell
+curl -H "Content-Type: application/json" -X POST -d '{"from": 4, "to": 5, "type": "Submit", "cids": [230]}' http://localhost:3000/scan
 ```
 
 - call repair
 
-```
+```shell
 curl -H "Content-Type: application/json" -X POST -d '{"cid": 214, "hash": "0xf4b8b9ab5fd291fccac38e91859379615ab8ca03d4407844450dcac75c46f28f", "type": "Submit"}' http://localhost:3000/repair
 ```
