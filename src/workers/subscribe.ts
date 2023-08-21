@@ -9,7 +9,7 @@ import {
 } from '../apis';
 import { expose } from 'threads/worker';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { LATEST_BLOCK, SUBSCRIBE_KEY } from '../constant';
+import { LATEST_BLOCK, SUBSCRIBE_KEY, DELAY_BLOCKS } from '../constant';
 
 // 11 minute
 const EXPIRED_TIME = 11 * 60 * 1000;
@@ -23,12 +23,14 @@ interface Context {
   curious: number;
   keyPair: KeyringPair;
   isPendingLock: boolean;
+  delayBlocks: number;
 }
 
 export const subscribeEvents = async () => {
   let api = await getDefaultApi();
   let state: Map<string, RecordItem> = new Map();
   let latestHeight: number = parseInt(LATEST_BLOCK);
+  let delayBlocks: number = parseInt(DELAY_BLOCKS);
   if (latestHeight <= 10) {
     let latestHash = await api.rpc.chain.getFinalizedHead();
     let latestHeader = await api.rpc.chain.getHeader(latestHash);
@@ -43,7 +45,8 @@ export const subscribeEvents = async () => {
     release: 0,
     curious: 0,
     keyPair: toKeyPair(SUBSCRIBE_KEY),
-    isPendingLock: false
+    isPendingLock: false,
+    delayBlocks: delayBlocks
   };
 
   console.log(`latestHeight : ${latestHeight}, operator: ${context.keyPair.address}`);
@@ -74,7 +77,7 @@ export const subscribeEvents = async () => {
 
   while (1) {
     console.log(
-      `==bh: ${context.beginHeight}, ch: ${context.currentHeight}, utx: ${context.state.size}, cp: ${context.capture}, re: ${context.release}, cu: ${context.curious}, lock: ${context.isPendingLock}==`
+      `==bh: ${context.beginHeight}, ch: ${context.currentHeight}, dh: ${context.delayBlocks}, utx: ${context.state.size}, cp: ${context.capture}, re: ${context.release}, cu: ${context.curious}, lock: ${context.isPendingLock}==`
     );
     await sleep(10000);
   }
@@ -86,7 +89,9 @@ async function sleep(ms: number) {
 
 // [begin, latest)
 const query = async (api: ApiPromise, latest: number, context: Context): Promise<void> => {
-  for (let i = context.beginHeight; i < latest; i++) {
+  let beginHeight = context.beginHeight - context.delayBlocks;
+  let endHeight = latest - context.delayBlocks;
+  for (let i = beginHeight; i < endHeight; i++) {
     let blockHash = await api.rpc.chain.getBlockHash(i);
     let events = await api.query.system.events.at(blockHash);
     for (let record of events) {

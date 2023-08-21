@@ -47,7 +47,7 @@ let subScan = async (
   tag: string,
   from: number,
   to: number,
-  cids?: Array<number>,
+  cids?: Array<number>
 ): Promise<ScanResult> => {
   console.log(`${tag} scan [${from},${to}) blocks`);
 

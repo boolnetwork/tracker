@@ -7,7 +7,7 @@ export const SCANNER_KEY =
 export const SUBSCRIBE_KEY =
   process.env.SUBSCRIBE_KEY || '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-export const DELAY_BLOCKS = process.env.DELAY_BLOCKS || 20;
+export const DELAY_BLOCKS = process.env.DELAY_BLOCKS || '0';
 export const LATEST_BLOCK = process.env.LATEST_BLOCK || '0';
 
 export const CustomType = {
