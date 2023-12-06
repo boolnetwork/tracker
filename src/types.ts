@@ -5,7 +5,13 @@ export enum ChainType {
   BTC = 'Btc',
   ETH = 'Eth',
   SOLANA = 'Solana',
-  APTOS = 'Aptos'
+  APTOS = 'Aptos',
+  STARKNET = 'Starknet',
+  SUI = 'Sui',
+  SUBSTRATE = 'Substrate',
+  TON = 'Ton',
+  NEAR = 'Near',
+  TRON = 'Tron'
 }
 
 export interface UncheckParams {
@@ -72,6 +78,18 @@ const toChainType = (type: number): ChainType => {
     return ChainType.SOLANA;
   } else if (type == 6) {
     return ChainType.APTOS;
+  } else if (type == 7) {
+    return ChainType.STARKNET;
+  } else if (type == 8) {
+    return ChainType.SUI;
+  } else if (type == 9) {
+    return ChainType.SUBSTRATE;
+  } else if (type == 10) {
+    return ChainType.TON;
+  } else if (type == 11) {
+    return ChainType.NEAR;
+  } else if (type == 12) {
+    return ChainType.TRON;
   } else {
     return ChainType.RAW;
   }
