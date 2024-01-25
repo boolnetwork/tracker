@@ -3,7 +3,7 @@ import { hexToU8a } from '@polkadot/util';
 import { spawn, Thread, Worker } from 'threads';
 import { ScanTask, toUncheckParam } from './types';
 import { server } from './server';
-import { MONITOR_URL, SCANNER_KEY, SUBSCRIBE_KEY, CHAIN_WS_URL } from './constant';
+import { MONITOR_URL, SCANNER_KEY, SUBSCRIBE_KEY, CHAIN_WS_URL, MODE } from './constant';
 
 const test = async () => {
   let api = await getDefaultApi();
@@ -32,11 +32,13 @@ let main = async () => {
   showConfig();
   // test();
   // subscribe thread
-  const subscribe = await spawn(new Worker('./workers/subscribe'));
-  await subscribe();
-  console.log('finished subscribe');
-  await Thread.terminate(subscribe);
-  console.log('terminate subscribe');
+  if (MODE !== 'Aider') {
+    const subscribe = await spawn(new Worker('./workers/subscribe'));
+    await subscribe();
+    console.log('finished subscribe');
+    await Thread.terminate(subscribe);
+    console.log('terminate subscribe');
+  }
 };
 
 main().catch(console.error);

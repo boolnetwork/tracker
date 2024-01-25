@@ -9,6 +9,7 @@ export const SUBSCRIBE_KEY =
 
 export const DELAY_BLOCKS = process.env.DELAY_BLOCKS || '0';
 export const LATEST_BLOCK = process.env.LATEST_BLOCK || '0';
+export const MODE = process.env.MODE || 'Full';
 
 export const CustomType = {
   "ValidatorId": "AccountId",
