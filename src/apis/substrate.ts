@@ -11,7 +11,7 @@ export const getDefaultApi = async (): Promise<ApiPromise> => {
   if (api == undefined) {
     const wsProvider = new WsProvider(CHAIN_WS_URL);
     const options = {
-      types: CustomType,
+      // types: CustomType,
       provider: wsProvider
     };
     api = await ApiPromise.create(options);
@@ -60,6 +60,38 @@ export const triggerAndWatch = async (
   };
 
   let call = api.tx.channel.requestSign(cid, hash);
+  let result = await doWithListener(keyPair, call);
+  return result;
+};
+
+export const chillOtherAndWatch = async (
+  api: ApiPromise,
+  keyPair: KeyringPair,
+  controllers: String[]
+): Promise<String> => {
+  let doWithListener = (seed: any, call: any) => {
+    return new Promise(function (resolve, reject) {
+      call
+        .signAndSend(seed, (cb: any) => {
+          if (cb.status.isInBlock) {
+            let result = '';
+            cb.events.forEach(({ phase, event: { data, method, section } }) => {
+              result += '\t' + phase.toString() + `: ${section}.${method}` + data.toString();
+            });
+            resolve(result);
+          }
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  };
+
+  let txs = [];
+  controllers.forEach((controller) => {
+      txs.push(api.tx.staking.chillOther(controller))
+  });
+  let call = api.tx.utility.batch(txs);
   let result = await doWithListener(keyPair, call);
   return result;
 };

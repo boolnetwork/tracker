@@ -5,6 +5,7 @@
 	"license": "MIT",
 	"scripts": {
 		"run": "./node_modules/.bin/ts-node ./src/index.ts",
+		"test": "./node_modules/.bin/ts-node ./src/index.ts",
 		"run:dev": "./node_modules/.bin/nodemon --exec ./node_modules/.bin/ts-node ./src/index.ts",
 		"build": "npm run clean && ./node_modules/.bin/tsc --pretty",
 		"build:dev": "./node_modules/.bin/tsc --pretty --declaration --watch",

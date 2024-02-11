@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-export const CHAIN_WS_URL = process.env.CHAIN_WS_URL || 'wss://test-rpc-node-ws.bool.network';
+export const CHAIN_WS_URL = process.env.CHAIN_WS_URL || 'wss://test2-rpc-node-ws.bool.network';
 export const MONITOR_URL = process.env.MONITOR_URL || 'http://127.0.0.1:8740';
 export const SCANNER_KEY =
   process.env.SCANNER_KEY || '0x0000000000000000000000000000000000000000000000000000000000000001';
