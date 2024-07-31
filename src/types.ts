@@ -11,7 +11,8 @@ export enum ChainType {
   SUBSTRATE = 'Substrate',
   TON = 'Ton',
   NEAR = 'Near',
-  TRON = 'Tron'
+  TRON = 'Tron',
+  CKB = "Ckb"
 }
 
 export interface UncheckParams {
@@ -91,7 +92,9 @@ const toChainType = (type: number): ChainType => {
     return ChainType.NEAR;
   } else if (type == 12) {
     return ChainType.TRON;
-  } else {
+  } else if (type == 13) {
+    return ChainType.CKB;
+  }else {
     return ChainType.RAW;
   }
 };
