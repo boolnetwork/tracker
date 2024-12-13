@@ -79,7 +79,7 @@ let subScan = async (
         }
       }
 
-      if (event.method === 'SubmitTransaction') {
+      if (event.method === 'SubmitTransaction' || event.method === 'SubmitTransactionSignResult') {
         let cid = event.data[0];
         if (cids == undefined || (cids != undefined && cids.includes(cid.toNumber()))) {
           let hash = event.data[3];

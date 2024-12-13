@@ -96,7 +96,7 @@ const query = async (api: ApiPromise, latest: number, context: Context): Promise
     let events = await api.query.system.events.at(blockHash);
     for (let record of events) {
       const { event } = record;
-      if (event.method === 'SubmitTransaction') {
+      if (event.method === 'SubmitTransaction' || event.method === 'SubmitTransactionSignResult') {
         let cid = event.data[0];
         let hash = event.data[3];
         let tx: any = await api.query.channel.txMessages(cid, hash);
